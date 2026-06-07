@@ -38,6 +38,7 @@
 - 每一笔收入和支出 → 自动写入利润表，实时累加总利润
 
 ## 项目结构（简化）
+```
 car-rental-system/
 ├── src/main/java/com/example/carrental/
 │ ├── controller/ # 控制器（处理请求）
@@ -53,7 +54,7 @@ car-rental-system/
 │ └── application.properties # 主配置文件（需自行添加）
 ├── pom.xml
 └── README.md
-
+```
 
 ## 数据库设计（表结构）
 
@@ -212,21 +213,22 @@ mvn spring-boot:run
 ```
 
 ## 访问地址
+| 页面    | 地址                                       | 说明         |
+|-------|------------------------------------------|------------|
+| 客户端首页 | http://localhost:8080/cars               | 车辆列表、租车/还车 |
+| 用户登录  | http://localhost:8080/user/login         | 普通用户登录     |
+| 用户注册  | http://localhost:8080/user/register      | 注册新用户      |
+| 管理后台  | http://localhost:8080/admin              | 管理员后台      |
+| 车辆管理  | http://localhost:8080/admin/cars         | 车辆增删改查     |
+| 租车记录  | http://localhost:8080/admin/rent-records | 租车记录管理     |
+| 维修管理  | http://localhost:8080/admin/repairs      | 维修管理       |
+| 利润分析  | http://localhost:8080/admin/profit       | 利润报表/图表    |
 
-页面	地址	说明
-客户端首页	http://localhost:8080/cars	车辆列表、租车/还车
-用户登录	http://localhost:8080/user/login	普通用户登录
-用户注册	http://localhost:8080/user/register	注册新用户
-管理后台	http://localhost:8080/admin	管理员后台
-车辆管理	http://localhost:8080/admin/cars	车辆增删改查
-租车记录	http://localhost:8080/admin/rent-records	租车记录管理
-维修管理	http://localhost:8080/admin/repairs	维修管理
-利润分析	http://localhost:8080/admin/profit	利润报表/图表
 >管理员账号：admin / admin123
 
 ## 许可证
 
-本项目使用 MIT 许可证，详见 LICENSE 文件。
+本项目使用 `MI` 许可证，详见 `LICENSE` 文件。
 
 ## 作者
 
