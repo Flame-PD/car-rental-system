@@ -82,9 +82,11 @@ car-rental-system/
 ```sql
 CREATE DATABASE IF NOT EXISTS car_rental;
 USE car_rental;
+```
 
 ###  2.创建表及基础数据
 直接复制以下 SQL 到 MySQL 执行：
+```sql
 -- 车辆表
 CREATE TABLE IF NOT EXISTS NewTable (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -154,9 +156,11 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- 给 RentRecord 增加外键（如果上面未生效）
 ALTER TABLE RentRecord ADD FOREIGN KEY (user_id) REFERENCES users(id);
+```
 
 ### 3. 插入初始数据（可选）
 
+```sql
 -- 车辆数据
 INSERT INTO NewTable (Plate, Brand, Model, Price_per_day, Status) VALUES
 ('赣A00000', '宝马', 'X1', 200.00, '可租'),
@@ -175,6 +179,7 @@ INSERT INTO users (username, password, phone, real_name, role) VALUES
 ('admin', 'admin123', '13900000000', '管理员', 'ADMIN'),
 ('zhangsan', '123456', '13800138001', '张三', 'USER'),
 ('lisi', '123456', '13800138002', '李四', 'USER');
+```
 
 ##项目配置（关键）
 在 src/main/resources/application.properties 中配置数据库连接（模板）：
@@ -188,7 +193,7 @@ spring.jpa.hibernate.ddl-auto=none
 spring.jpa.show-sql=true
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
-如果你的 MySQL 在 WSL 中，请将 localhost 改为 WSL 的 IP 地址（例如 172.xx.xx.xx）。
+>如果你的 MySQL 在 WSL 中，请将 localhost 改为 WSL 的 IP 地址（例如 172.xx.xx.xx）。
 
 ##运行项目
 ###方式一：IDEA 直接运行
@@ -212,7 +217,7 @@ mvn spring-boot:run
 租车记录	http://localhost:8080/admin/rent-records	租车记录管理
 维修管理	http://localhost:8080/admin/repairs	维修管理
 利润分析	http://localhost:8080/admin/profit	利润报表/图表
-管理员账号：admin / admin123
+>管理员账号：admin / admin123
 
 ##许可证
 本项目使用 MIT 许可证，详见 LICENSE 文件。
