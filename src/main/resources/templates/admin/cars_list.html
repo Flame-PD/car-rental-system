@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理端 - 车辆列表</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 95%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+            color: white;
+        }
+        .btn {
+            display: inline-block;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 3px;
+            margin: 2px;
+        }
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-edit {
+            background-color: #ffc107;
+            color: black;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        .header {
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+<div style="text-align:center; margin:20px;">
+    <h1>🚗 管理端 - 车辆管理</h1>
+    <a href="/admin" style="display:inline-block; margin-bottom:10px; color:#007bff; text-decoration:none;">← 返回管理首页</a>
+    <a href="/admin/cars/add" class="btn btn-add" style="margin-left:20px;">+ 新增车辆</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>车牌号</th>
+        <th>品牌</th>
+        <th>车型</th>
+        <th>日租金(元)</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="car : ${cars}">
+        <td>[[${car.id}]]</td>
+        <td>[[${car.plate}]]</td>
+        <td>[[${car.brand}]]</td>
+        <td>[[${car.model}]]</td>
+        <td>[[${car.pricePerDay}]]</td>
+        <td>
+            <select th:id="'status_' + ${car.id}">
+                <option value="可租" th:selected="${car.status == '可租'}">可租</option>
+                <option value="在租" th:selected="${car.status == '在租'}">在租</option>
+                <option value="不可租" th:selected="${car.status == '不可租'}">不可租</option>
+            </select>
+            <button th:onclick="'updateStatus(' + ${car.id} + ')'" style="margin-left:5px;">保存</button>
+        </td>
+        <td>
+            <a th:href="@{/admin/cars/edit/{id}(id=${car.id})}" class="btn btn-edit">编辑</a>
+            <a th:href="@{/admin/cars/delete/{id}(id=${car.id})}" class="btn btn-delete"
+               onclick="return confirm('确定删除 [[${car.brand}]] [[${car.model}]] 吗？')">删除</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<script>
+    function updateStatus(carId) {
+        var select = document.getElementById('status_' + carId);
+        var newStatus = select.value;
+
+        fetch('/admin/cars/update-status/' + carId + '?status=' + newStatus, {
+            method: 'POST'
+        }).then(function(response) {
+            if (response.ok) {
+                location.reload();  // 刷新页面显示最新状态
+            } else {
+                alert('修改失败');
+            }
+        });
+    }
+</script>
+</body>
+</html>

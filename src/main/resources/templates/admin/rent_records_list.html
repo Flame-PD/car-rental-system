@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>租车记录管理</title>
+    <style>
+        table { border-collapse: collapse; width: 95%; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #333; color: white; }
+        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; margin: 2px; }
+        .btn-add { background-color: #28a745; color: white; }
+        .btn-return { background-color: #007bff; color: white; }
+        .btn-delete { background-color: #dc3545; color: white; }
+        .renting { background-color: #fff3cd; }
+        .returned { background-color: #d4edda; }
+    </style>
+</head>
+<body>
+<div style="text-align:center; margin:20px;">
+    <h1>📋 租车记录管理</h1>
+    <a href="/admin" style="display:inline-block; margin-bottom:10px; color:#007bff; text-decoration:none;">← 返回管理首页</a>
+    <a href="/admin/rent-records/add" class="btn btn-add" style="margin-left:20px;">+ 新增租车</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>车辆ID</th>
+        <th>租车人</th>
+        <th>电话</th>
+        <th>租车时间</th>
+        <th>还车时间</th>
+        <th>日租金</th>
+        <th>总租金</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record : ${records}"
+        th:class="${record.status == '租赁中' ? 'renting' : 'returned'}">
+        <td>[[${record.id}]]</td>
+        <td>[[${record.carId}]]</td>
+        <td>[[${record.customerName}]]</td>
+        <td>[[${record.customerPhone}]]</td>
+        <td th:text="${#temporals.format(record.rentTime, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${record.returnTime != null ? #temporals.format(record.returnTime, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+        <td>[[${record.priceNow}]]</td>
+        <td th:text="${record.priceTotal != null ? record.priceTotal : '-'}"></td>
+        <td>[[${record.status}]]</td>
+        <td>
+            <a th:if="${record.status == '租赁中'}"
+               th:href="@{/admin/rent-records/return/{id}(id=${record.id})}"
+               class="btn-return"
+               onclick="return confirm('确认还车吗？')">还车</a>
+            <a th:href="@{/admin/rent-records/delete/{id}(id=${record.id})}"
+               class="btn-delete"
+               onclick="return confirm('删除这条记录？')">删除</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

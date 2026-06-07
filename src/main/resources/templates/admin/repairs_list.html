@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>维修管理</title>
+    <style>
+        table { border-collapse: collapse; width: 95%; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #333; color: white; }
+        .btn-complete { background-color: #28a745; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px; }
+        .repairing { background-color: #fff3cd; }
+    </style>
+</head>
+<body>
+<div style="text-align:center; margin:20px;">
+    <h1>🔧 维修管理</h1>
+    <a href="/admin" style="display:inline-block; margin-bottom:10px; color:#007bff; text-decoration:none;">← 返回管理首页</a>
+</div>
+
+<div th:if="${repairs.size() == 0}" style="text-align:center; color:green; margin:50px;">
+    ✅ 没有正在维修的车辆
+</div>
+
+<div th:if="${repairs.size() > 0}">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>车辆ID</th>
+            <th>车牌号</th>
+            <th>品牌</th>
+            <th>车型</th>
+            <th>开始维修时间</th>
+            <th>预估成本</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="repair : ${repairs}" class="repairing">
+            <td>[[${repair.id}]]</td>
+            <td>[[${repair.carId}]]</td>
+            <td>[[${repair.carPlate}]]</td>
+            <td>[[${repair.carBrand}]]</td>
+            <td>[[${repair.carModel}]]</td>
+            <td th:text="${#temporals.format(repair.repairStartTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>[[${repair.cost}]]元</td>
+            <td>[[${repair.status}]]</td>
+            <td>
+                <a th:href="@{/admin/repairs/complete/{id}(id=${repair.id})}"
+                   class="btn-complete"
+                   th:data-cost="${repair.cost}"
+                   onclick="return confirmComplete(this)">维修完成</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    function confirmComplete(btn) {
+        var cost = btn.getAttribute('data-cost');
+        return confirm('确认维修完成吗？将花费 ' + cost + ' 元');
+    }
+</script>
+</body>
+</html>

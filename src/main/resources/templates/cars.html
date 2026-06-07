@@ -1,0 +1,165 @@
+<div th:if="${session.currentUser != null}" style="text-align:right; padding:10px;">
+    欢迎，[[${session.currentUser.realName}]]！
+    <a href="/logout">退出登录</a>
+</div>
+<div th:if="${session.errorMsg}"
+     style="color: red; text-align: center; padding: 10px; background: #f8d7da; margin: 10px; border-radius: 5px;">
+    [[${session.errorMsg}]]
+    <script>
+        // 显示后清除错误信息
+        setTimeout(function() {
+            fetch('/clear-error', {method: 'POST'});
+        }, 100);
+    </script>
+</div>
+<div th:if="${session.currentUser == null}" style="text-align:right; padding:10px;">
+    <a href="/user/login">登录</a> | <a href="/user/register">注册</a>
+</div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>车辆租赁系统</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+        .available { background-color: #d4edda; }
+        .rented { background-color: #f8d7da; }
+        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; color: white; }
+        .btn-rent { background-color: #28a745; }
+        .btn-return { background-color: #007bff; }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .modal-content input {
+            width: 90%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        .modal-content button {
+            padding: 8px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align:center;">
+    🚗 车辆租赁系统
+    <a href="/admin" style="font-size:16px; margin-left:20px; background-color:#6c757d; color:white; padding:5px 10px; text-decoration:none; border-radius:5px;">管理后台</a>
+</h1>
+<h2 style="text-align:center;">车辆列表</h2>
+
+<div style="text-align:center; margin-bottom:20px;">
+    <a th:href="@{/cars/search}">🔍 查询租赁记录</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>车牌号</th>
+        <th>品牌</th>
+        <th>车型</th>
+        <th>日租金(元)</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="car : ${cars}" th:class="${car.status == '可租' ? 'available' : 'rented'}">
+        <td>[[${car.id}]]</td>
+        <td>[[${car.plate}]]</td>
+        <td>[[${car.brand}]]</td>
+        <td>[[${car.model}]]</td>
+        <td>[[${car.pricePerDay}]]</td>
+        <td>[[${car.status}]]</td>
+        <td>
+            <a th:if="${car.status == '可租'}"
+               href="javascript:void(0)"
+               th:data-id="${car.id}"
+               th:data-info="${car.brand} + ' ' + ${car.model}"
+               th:data-price="${car.pricePerDay}"
+               class="btn btn-rent"
+               onclick="showRentModal(this)">租车</a>
+            <a th:if="${car.status == '在租'}"
+               th:href="@{/cars/return/{id}(id=${car.id})}"
+               class="btn btn-return"
+               onclick="return confirm('确认还车吗？')">还车</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 租车弹窗 -->
+<div id="rentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>租车信息</h3>
+        <form id="rentForm" method="post" action="/cars/rent">
+            <input type="hidden" id="carId" name="carId">
+            <p><strong>车辆：</strong><span id="carInfo"></span></p>
+            <p><strong>日租金：</strong><span id="priceNow"></span> 元</p>
+            <div>
+                <label>姓名：</label>
+                <input type="text" id="customerName" name="customerName" required>
+            </div>
+            <div>
+                <label>电话：</label>
+                <input type="text" id="customerPhone" name="customerPhone">
+            </div>
+            <div>
+                <button type="submit">确认租车</button>
+                <button type="button" onclick="closeModal()">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showRentModal(btn) {
+        var carId = btn.getAttribute('data-id');
+        var carInfo = btn.getAttribute('data-info');
+        var priceNow = btn.getAttribute('data-price');
+
+        document.getElementById('carId').value = carId;
+        document.getElementById('carInfo').innerText = carInfo;
+        document.getElementById('priceNow').innerText = priceNow;
+        document.getElementById('rentModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('rentModal').style.display = 'none';
+    }
+
+    // 点击弹窗外关闭
+    window.onclick = function(event) {
+        var modal = document.getElementById('rentModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>利润分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; font-size: 18px; font-weight: bold; }
+        .card-body { padding: 20px; }
+        .summary { text-align: center; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 10px; margin-bottom: 20px; }
+        .total-profit { font-size: 48px; font-weight: bold; color: #2e7d32; }
+        .chart-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+        .chart-col { flex: 1; min-width: 300px; }
+        canvas { max-height: 300px; width: 100% !important; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #f8f9fa; }
+        .income { color: green; font-weight: bold; }
+        .expense { color: red; font-weight: bold; }
+        .btn-back { display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="text-align:center; margin:20px 0;">
+        <h1>💰 利润分析</h1>
+        <a href="/admin" class="btn-back">← 返回管理首页</a>
+    </div>
+
+    <!-- 总利润卡片 -->
+    <div class="summary">
+        <h2>系统总利润</h2>
+        <div class="total-profit" th:text="${#numbers.formatDecimal(totalProfit, 1, 2)} + ' 元'"></div>
+    </div>
+
+    <!-- 图表区域 -->
+    <div class="card">
+        <div class="card-header">📈 月度收入与支出趋势</div>
+        <div class="card-body">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">🥧 各品牌车辆利润排行</div>
+        <div class="card-body">
+            <canvas id="brandChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 各车辆利润统计表 -->
+    <div class="card">
+        <div class="card-header">🚗 各车辆利润统计</div>
+        <div class="card-body" style="overflow-x: auto;">
+            <table>
+                <thead>
+                <tr><th>车辆ID</th><th>车牌号</th><th>品牌</th><th>车型</th><th>总利润</th><th>详情</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="car : ${cars}">
+                    <td>[[${car.id}]]</td>
+                    <td>[[${car.plate}]]</td>
+                    <td>[[${car.brand}]]</td>
+                    <td>[[${car.model}]]</td>
+                    <td th:class="${carProfitMap[car.id] >= 0 ? 'income' : 'expense'}"
+                        th:text="${#numbers.formatDecimal(carProfitMap[car.id], 1, 2)} + ' 元'"></td>
+                    <td><a th:href="@{/admin/profit/car/{id}(id=${car.id})}">查看明细</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 利润明细表 -->
+    <div class="card">
+        <div class="card-header">📋 所有利润记录</div>
+        <div class="card-body" style="overflow-x: auto;">
+            <table>
+                <thead>
+                <tr><th>ID</th><th>车辆ID</th><th>车牌号</th><th>类型</th><th>金额</th><th>记录时间</th><th>当前总收益</th><th>备注</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="record : ${records}">
+                    <td>[[${record.id}]]</td>
+                    <td>[[${record.carId}]]</td>
+                    <td>[[${record.carPlate}]]</td>
+                    <td th:class="${record.type == '收入' ? 'income' : 'expense'}">[[${record.type}]]</td>
+                    <td th:class="${record.type == '收入' ? 'income' : 'expense'}">[[${record.amount}]] 元</td>
+                    <td>[[${#temporals.format(record.recordTime, 'yyyy-MM-dd HH:mm')}]]</td>
+                    <td>[[${#numbers.formatDecimal(record.runningBalance, 1, 2)}]] 元</td>
+                    <td>[[${record.remark}]]</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // 月度图表数据
+    var months = /*[[${months}]]*/ [];
+    var incomes = /*[[${incomes}]]*/ [];
+    var expenses = /*[[${expenses}]]*/ [];
+
+    // 品牌图表数据
+    var brands = /*[[${brands}]]*/ [];
+    var brandProfits = /*[[${brandProfits}]]*/ [];
+
+    // 月度柱状图
+    if (months.length > 0) {
+        var ctx1 = document.getElementById('monthlyChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: '收入 (元)',
+                        data: incomes,
+                        backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                        borderColor: 'rgb(40, 167, 69)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '支出 (元)',
+                        data: expenses,
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                        borderColor: 'rgb(220, 53, 69)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: false }
+                }
+            }
+        });
+    }
+
+    // 品牌利润饼图
+    if (brands.length > 0 && brandProfits.length > 0) {
+        var ctx2 = document.getElementById('brandChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: brands,
+                datasets: [{
+                    data: brandProfits,
+                    backgroundColor: ['#28a745', '#007bff', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997', '#e83e8c', '#6c757d']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                var value = context.raw || 0;
+                                return label + ': ' + value.toFixed(2) + ' 元';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

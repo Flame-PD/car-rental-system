@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理后台</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px 40px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            width: 200px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 15px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .desc {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #999;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🚗 车辆租赁管理系统</h1>
+    <h2 style="text-align:center; color:#666; font-weight:normal;">管理后台</h2>
+
+    <div class="menu">
+        <a href="/admin/cars" class="card">
+            <span class="icon">🚙</span>
+            <span class="title">车辆管理</span>
+            <span class="desc">增删改查车辆信息</span>
+        </a>
+        <a href="/admin/rent-records" class="card">
+            <span class="icon">📋</span>
+            <span class="title">租赁管理</span>
+            <span class="desc">查看租车还车记录</span>
+        </a>
+        <a href="/admin/repairs" class="card">
+            <span class="icon">🔧</span>
+            <span class="title">维修管理</span>
+            <span class="desc">查看维修中车辆</span>
+        </a>
+        <a href="/admin/profit" class="card">
+            <span class="icon">💰</span>
+            <span class="title">利润分析</span>
+            <span class="desc">查看经营利润</span>
+        </a>
+    </div>
+
+    <div class="footer">
+        <a href="/cars">← 返回客户端</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>查询租赁记录</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .search-box { text-align: center; margin: 30px; }
+        .search-box input, .search-box select { padding: 8px; margin: 5px; }
+        .search-box button { padding: 8px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        table { border-collapse: collapse; width: 95%; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #333; color: white; }
+        .btn { display: inline-block; padding: 5px 10px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+<div style="text-align:center;">
+    <h1>租赁记录查询</h1>
+    <a href="/cars" class="btn">返回租车页面</a>
+</div>
+
+<div class="search-box">
+    <form method="get" action="/cars/search">
+        <select name="type">
+            <option value="name" th:selected="${param.type == 'name'}">按姓名</option>
+            <option value="phone" th:selected="${param.type == 'phone'}">按电话</option>
+        </select>
+        <input type="text" name="keyword" placeholder="请输入查询关键字" th:value="${param.keyword}">
+        <button type="submit">查询</button>
+    </form>
+</div>
+
+<div th:if="${records != null and records.size() > 0}">
+    <h3 style="text-align:center;">共找到 [[${records.size()}]] 条记录</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>车辆ID</th>
+            <th>租车人</th>
+            <th>电话</th>
+            <th>租车时间</th>
+            <th>还车时间</th>
+            <th>日租金</th>
+            <th>总租金</th>
+            <th>状态</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="record : ${records}">
+            <td>[[${record.id}]]</td>
+            <td>[[${record.carId}]]</td>
+            <td>[[${record.customerName}]]</td>
+            <td>[[${record.customerPhone}]]</td>
+            <td>[[${#temporals.format(record.rentTime, 'yyyy-MM-dd HH:mm')}]]</td>
+            <td th:text="${record.returnTime != null ? #temporals.format(record.returnTime, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+            <td>[[${record.priceNow}]]</td>
+            <td th:text="${record.priceTotal != null ? record.priceTotal : '-'}"></td>
+            <td>[[${record.status}]]</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${records != null and records.size() == 0}" style="text-align:center; color:red;">
+    没有找到相关记录
+</div>
+</body>
+</html>

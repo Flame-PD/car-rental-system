@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>车辆利润明细</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .summary { text-align: center; margin: 30px; padding: 20px; background-color: #e8f5e9; border-radius: 10px; }
+        .total-profit { font-size: 36px; font-weight: bold; color: #2e7d32; }
+        .table { width: 95%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #333; color: white; }
+        .income { color: green; }
+        .expense { color: red; }
+        .btn-back { display: inline-block; margin: 10px; padding: 8px 16px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<div style="text-align:center;">
+    <h1>💰 车辆利润明细</h1>
+    <a href="/admin/profit" class="btn-back">← 返回利润分析</a>
+</div>
+
+<div class="summary">
+    <h2 th:text="${car.brand} + ' ' + ${car.model} + ' (' + ${car.plate} + ')'"></h2>
+    <div class="total-profit" th:text="${carProfit != null ? #numbers.formatDecimal(carProfit, 1, 2) + ' 元' : '0.00 元'}"></div>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>类型</th>
+        <th>金额</th>
+        <th>记录时间</th>
+        <th>当前总收益</th>
+        <th>备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record : ${records}">
+        <td>[[${record.id}]]</td>
+        <td th:class="${record.type == '收入' ? 'income' : 'expense'}">[[${record.type}]]</td>
+        <td th:class="${record.type == '收入' ? 'income' : 'expense'}">[[${record.amount}]] 元</td>
+        <td th:text="${#temporals.format(record.recordTime, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:class="${record.runningBalance >= 0 ? 'income' : 'expense'}">[[${record.runningBalance}]] 元</td>
+        <td>[[${record.remark}]]</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
