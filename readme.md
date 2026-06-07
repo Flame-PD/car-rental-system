@@ -181,7 +181,7 @@ INSERT INTO users (username, password, phone, real_name, role) VALUES
 ('lisi', '123456', '13800138002', '李四', 'USER');
 ```
 
-##项目配置（关键）
+## 项目配置（关键）
 在 src/main/resources/application.properties 中配置数据库连接（模板）：
 ```java
 spring.datasource.url=jdbc:mysql://localhost:3306/car_rental?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
@@ -195,9 +195,9 @@ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.Ph
 ```
 >如果你的 MySQL 在 WSL 中，请将 localhost 改为 WSL 的 IP 地址（例如 172.xx.xx.xx）。
 
-##运行项目
+## 运行项目
 
-###方式一：IDEA 直接运行
+### 方式一：IDEA 直接运行
 
 打开项目，等待 Maven 下载依赖
 
@@ -205,13 +205,13 @@ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.Ph
 
 右键 → Run
 
-###方式二：命令行运行
+### 方式二：命令行运行
 
 ```bash
 mvn spring-boot:run
 ```
 
-##访问地址
+## 访问地址
 
 页面	地址	说明
 客户端首页	http://localhost:8080/cars	车辆列表、租车/还车
@@ -224,11 +224,11 @@ mvn spring-boot:run
 利润分析	http://localhost:8080/admin/profit	利润报表/图表
 >管理员账号：admin / admin123
 
-##许可证
+## 许可证
 
 本项目使用 MIT 许可证，详见 LICENSE 文件。
 
-##作者
+## 作者
 
 秦沛儒
 
