@@ -183,7 +183,7 @@ INSERT INTO users (username, password, phone, real_name, role) VALUES
 
 ##项目配置（关键）
 在 src/main/resources/application.properties 中配置数据库连接（模板）：
-
+```java
 spring.datasource.url=jdbc:mysql://localhost:3306/car_rental?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 spring.datasource.username=root
 spring.datasource.password=你的密码
@@ -192,11 +192,13 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.show-sql=true
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
+```
 >如果你的 MySQL 在 WSL 中，请将 localhost 改为 WSL 的 IP 地址（例如 172.xx.xx.xx）。
 
 ##运行项目
+
 ###方式一：IDEA 直接运行
+
 打开项目，等待 Maven 下载依赖
 
 找到 CarrentalApplication.java
@@ -204,10 +206,13 @@ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.Ph
 右键 → Run
 
 ###方式二：命令行运行
-bash
+
+```bash
 mvn spring-boot:run
+```
 
 ##访问地址
+
 页面	地址	说明
 客户端首页	http://localhost:8080/cars	车辆列表、租车/还车
 用户登录	http://localhost:8080/user/login	普通用户登录
@@ -220,9 +225,11 @@ mvn spring-boot:run
 >管理员账号：admin / admin123
 
 ##许可证
+
 本项目使用 MIT 许可证，详见 LICENSE 文件。
 
 ##作者
+
 秦沛儒
 
 课程设计 / 车辆租赁管理系统
