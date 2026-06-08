@@ -184,7 +184,7 @@ INSERT INTO users (username, password, phone, real_name, role) VALUES
 
 ## 项目配置（关键）
 在 src/main/resources/application.properties 中配置数据库连接（模板）：
-```java
+```
 spring.datasource.url=jdbc:mysql://localhost:3306/car_rental?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 spring.datasource.username=root
 spring.datasource.password=你的密码
@@ -228,7 +228,7 @@ mvn spring-boot:run
 
 ## 许可证
 
-本项目使用 `MI` 许可证，详见 `LICENSE` 文件。
+本项目使用 `MIT` 许可证，详见 `LICENSE` 文件。
 
 ## 作者
 
